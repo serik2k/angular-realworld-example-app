@@ -6,7 +6,7 @@ const routes: Routes = [
     path: "",
     children: [
       {
-        path: ":username",
+        path: "/smth",
         component: ProfileComponent,
         children: [
           {

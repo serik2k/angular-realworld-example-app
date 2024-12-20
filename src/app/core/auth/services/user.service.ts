@@ -9,6 +9,7 @@ import { Router } from "@angular/router";
 
 @Injectable({ providedIn: "root" })
 export class UserService {
+  
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser = this.currentUserSubject
     .asObservable()
@@ -21,7 +22,8 @@ export class UserService {
     private readonly jwtService: JwtService,
     private readonly router: Router,
   ) {}
-
+  
+/** 
   login(credentials: { // Task 2
     email: string;
     password: string;
@@ -30,39 +32,78 @@ export class UserService {
       .post<{ user: User }>("/users/login", { user: credentials })
       .pipe(tap(({ user }) => this.setAuth(user)));
   }
+*/
+  login(credentials: { email: string; password: string }): Observable<{ user: User }> {
+    
+    const mockUser: User = {
+      username: "",
+      email: "",
+      token: "",
+      bio: "",
+      image: ""
+    };
 
-  register(credentials: {
-    username: string;
-    email: string;
-    password: string;
-  }): Observable<{ user: User }> {
-    return this.http
-      .post<{ user: User }>("/users", { user: credentials })
-      .pipe(tap(({ user }) => this.setAuth(user)));
+    
+    this.setAuth(mockUser);
+  
+    return new Observable<{ user: User }>((observer) => {
+      observer.next({ user: mockUser });
+      observer.complete();
+    });
   }
-
+    
+  register(credentials: { username: string; email: string; password: string }): Observable<{ user: User }> {
+    
+    const mockUser: User = {
+      username: credentials.username,
+      email: credentials.email,
+      token: "",
+      bio: "",
+      image: ""
+    };
+    return new Observable<{ user: User }>((observer) => {
+      observer.next({ user: mockUser });
+      observer.complete();
+    });
+  }
+    
   logout(): void {
     this.purgeAuth();
     void this.router.navigate(["/"]);
   }
 
   getCurrentUser(): Observable<{ user: User }> {
-    return this.http.get<{ user: User }>("/user").pipe(
-      tap({
-        next: ({ user }) => this.setAuth(user),
-        error: () => this.purgeAuth(),
-      }),
-      shareReplay(1),
-    );
+    return new Observable<{ user: User }>((observer) => {
+      
+      const mockUser: User = {
+        username: "",
+        email: "",
+        token: "",
+        bio: "",
+        image: ""
+      };
+
+      observer.next({ user: mockUser });
+      observer.complete();
+    });
   }
 
   update(user: Partial<User>): Observable<{ user: User }> {
-    return this.http.put<{ user: User }>("/user", { user }).pipe(
-      tap(({ user }) => {
-        this.currentUserSubject.next(user);
-      }),
-    );
+    return new Observable<{ user: User }>((observer) => {
+      const mockUser: User = {
+        username: "",
+        email: "",
+        token: "",
+        bio: "",
+        image: ""
+      };
+
+      observer.next({ user: mockUser });
+      observer.complete();
+    });
   }
+  
+
 
   setAuth(user: User): void {
     this.jwtService.saveToken(user.token);
@@ -73,4 +114,6 @@ export class UserService {
     this.jwtService.destroyToken();
     this.currentUserSubject.next(null);
   }
+  
 }
+
